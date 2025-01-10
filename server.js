@@ -9,6 +9,11 @@ const API_KEY = "";
 // Middleware для обработки JSON
 app.use(express.json());
 
+                                          // Маршрут по умолчанию
+app.get('/', (req, res) => {
+    res.send('Server work!');
+});
+
 // Обработчик POST-запроса для работы с OpenAI
 app.post('/api/chat', async (req, res) => {
     const { messages } = req.body;
