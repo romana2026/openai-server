@@ -3,12 +3,10 @@ const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-const API_KEY = ""; 
+const API_KEY = process.env.API_KEY;
 
 // Middleware для обработки JSON
 app.use(express.json());
-
                                           // Маршрут по умолчанию
 app.get('/', (req, res) => {
     res.send('Server work!');
