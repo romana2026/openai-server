@@ -6,8 +6,7 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY;
-//const API_KEY = "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";
-// Middleware для обработки JSON
+
 app.use(express.json());
                                           // Маршрут по умолчанию
 app.get('/', (req, res) => {
