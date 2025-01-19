@@ -1,18 +1,18 @@
-//const express = require('express');
-//const axios = require('axios');
-//const cors = require('cors');
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
 
-//const app = express();
-//app.use(cors());
+const app = express();
+app.use(cors());
 
-//const PORT = process.env.PORT || 3000;
-//const API_KEY = process.env.API_KEY;
+const PORT = process.env.PORT || 3000;
+const API_KEY = process.env.API_KEY;
 
-//app.use(express.json());
+app.use(express.json());
 
 const allowedMacAddresses = ['D85ED35351D0', '60189512073D'];
 
-//app.get('/', (req, res) => {
+app.get('/', (req, res) => {
   const macAddress = req.query.mac;          // Получаем MAC-адрес из URL
   if (allowedMacAddresses.includes(macAddress)) {
     res.json({ status: 'success', message: 'MAC address is authorized.' });
@@ -21,14 +21,14 @@ const allowedMacAddresses = ['D85ED35351D0', '60189512073D'];
   }
 });
 
-//app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', async (req, res) => {
     const { messages } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
         return res.status(400).send({ error: "Incorrect request format." });
     }
 
-    //try {
+    try {
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
             {
