@@ -10,7 +10,7 @@ const API_KEY = process.env.API_KEY;
 
 app.use(express.json());
 
-const allowedMacAddresses = ['D85ED35351D2', '60189512073D'];
+const allowedMacAddresses = ['D85ED35351D3', '60189512073D'];
 
 app.get('/', (req, res) => {
   const macAddress = req.query.mac;          // Получаем MAC-адрес из URL
