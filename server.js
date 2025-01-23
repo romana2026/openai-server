@@ -17,7 +17,7 @@ app.post('/check-mac', (req, res) => {   // Маршрут для пров MAC-�
   validToken = generateToken(mac);
   res.json({ success: true, token: validToken });
  } else {
-  res.status(403).json({ error: "I'm sorry" });
+  res.status(403).json({ error: 'Sorry...' });
  }
 });
 function generateToken(mac) {
