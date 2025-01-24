@@ -17,7 +17,7 @@ app.post('/check-mac', (req, res) => {   // Маршрут для пров MAC-�
   validToken = generateToken(mac);
   res.json({ success: true, token: validToken });
  } else {
-  res.status(403).json({ error: 'Sorry...' });
+  res.status(403).json({ error: 'Sorry.' });
  }
 });
 function generateToken(mac) {
@@ -26,7 +26,7 @@ function generateToken(mac) {
 app.post('/api/chat', async (req, res) => {
  const { messages, token } = req.body;
  if (!messages || !Array.isArray(messages) || token !== validToken) {
-  return res.status(400).send({ error: "Invalid request access." });
+  return res.status(400).send({ error: "Sorry.." });
  }
  try {
   const response = await axios.post(
@@ -45,7 +45,7 @@ app.post('/api/chat', async (req, res) => {
   res.send(response.data);
   } catch (error) {
  console.error("Error API:", error.message);
-  res.status(500).send({ error: "Error with server or OpenAI API." });
+  res.status(500).send({ error: "Sorry..." });
  }
 });
 
