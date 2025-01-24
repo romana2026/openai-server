@@ -18,14 +18,14 @@ app.post('/check-mac', (req, res) => {
   validToken = generateToken(mac);
   res.json({ success: true, token: validToken });
  }
- // else { res.status(403).json({ error: 'Sorry.' }); }
+ else { res.status(403).json({ error: 'Sorry.' }); }
 });
 
 function generateToken(mac) { return Buffer.from(mac + new Date().toISOString()).toString('base64'); }
 
 app.post('/api/chat', async (req, res) => {
  const { messages, token } = req.body;
- // if (!messages || !Array.isArray(messages) || token !== validToken) { return res.status(400).send({ error: "Unautorized..." }); }
+ if (!messages || !Array.isArray(messages) || token !== validToken) { return res.status(400).send({ error: "Unautorized..." }); }
  try {
   const response = await axios.post(
    'https://api.openai.com/v1/chat/completions',
@@ -42,7 +42,7 @@ app.post('/api/chat', async (req, res) => {
   );
   res.send(response.data);
   } 
-  // catch (error) { res.status(500).send({ error: "Error API." }); }
+  catch (error) { res.status(500).send({ error: "Error API." }); }
 });
 
 app.listen(PORT, () => { console.log(`The server is running on port ${PORT}`); });
