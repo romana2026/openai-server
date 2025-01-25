@@ -12,7 +12,7 @@ const allowedMacAddresses = ['D85ED35351D2', '60189512073D'];
 
 let tokens = {};                     // Хранилище токенов с временем истечения
 
-const TOKEN_EXPIRY_TIME = 5 * 60 * 1000;  // Время жизни токена 5 минут)
+const TOKEN_EXPIRY_TIME = 30 * 60 * 1000;  // Время жизни токена 30 минут)
 
 app.post('/check-mac', (req, res) => {
  const { mac } = req.body;
