@@ -27,7 +27,7 @@ app.post('/check-mac', (req, res) => {
  else  res.status(403).json({ error: 'Unauthorized MAC address' });
 });
 
-function generateToken(mac) return Buffer.from(mac + new Date().toISOString()).toString('base64'); }
+function generateToken(mac) { return Buffer.from(mac + new Date().toISOString()).toString('base64'); }
 
 app.post('/api/chat', async (req, res) => {
  const { messages, token } = req.body;
