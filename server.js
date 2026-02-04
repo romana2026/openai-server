@@ -39,7 +39,7 @@ function generateToken() {
   return crypto.randomBytes(32).toString('hex');     // 256-bit
 }
 
-function validateToken(token, req) {
+function validateToken(token) {
   const data = tokens.get(token);
   if (!data) return false;
 
@@ -47,9 +47,6 @@ function validateToken(token, req) {
     tokens.delete(token);
     return false;
   }
-
-  if (data.ip !== req.ip) return false;
-
   return true;
 }
 
@@ -70,7 +67,6 @@ app.post('/checka', (req, res) => {                  // Получение то�
 
   tokens.set(token, {
     aaa,
-    ip: req.ip,
     expiry: Date.now() + TOKEN_EXPIRY_TIME
   });
 
@@ -128,3 +124,4 @@ setInterval(() => {            // Очистка протухших токено
 app.listen(PORT, () => {                                    // Start
   console.log(`Server running on port ${PORT}`);
 });
+
