@@ -4,45 +4,10 @@ const cors = require('cors');
 const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
 
-// const app = express();
+const app = express();
 
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY;
-
-import OpenAI from "openai";
-import express from "express";
-
-const app = express();
-app.use(express.json());
-
-const openai = new OpenAI({
-  apiKey: process.env.API_KEY
-});
-
-app.post("/api/tts", async (req, res) => {            // TTS endpoint
-  try {
-    const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "No text" });
-
-    const speech = await openai.audio.speech.create({
-      model: "gpt-4o-mini-tts",
-      voice: "alloy",
-      input: text,
-      format: "mp3"
-    });
-
-    const buffer = Buffer.from(await speech.arrayBuffer());
-    const base64Audio = buffer.toString("base64");
-
-    res.json({
-      audio: `data:audio/mp3;base64,${base64Audio}`
-    });
-
-  } catch (err) {
-    console.error("TTS error:", err);
-    res.status(500).json({ error: "TTS failed" });
-  }
-});
 
 if (!API_KEY) {
   console.error('❌ API_KEY is not set');
@@ -57,8 +22,7 @@ app.use(express.json({ limit: '50kb' }));
 
 app.set('trust proxy', 1);
 
-/* Rate limit для API */
-app.use('/api/', rateLimit({
+app.use('/api/', rateLimit({                  // Rate limit для API 
   windowMs: 60 * 1000,
   max: 30,
   standardHeaders: true,
@@ -156,7 +120,48 @@ setInterval(() => {            // Очистка протухших токено
   }
 }, 5 * 60 * 1000);
 
+app.post('/api/tts', async (req, res) => {
+  const { text, token } = req.body;
+
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ error: 'No text' });
+  }
+
+  if (!validateToken(token)) {
+    return res.status(403).json({ error: 'Invalid or expired token' });
+  }
+
+  try {
+    const response = await axios.post(
+      'https://api.openai.com/v1/audio/speech',
+      {
+        model: 'gpt-4o-mini-tts',
+        voice: 'alloy',
+        input: text,
+        format: 'mp3'
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        responseType: 'arraybuffer',              // ВАЖНО
+        timeout: 20000
+      }
+    );
+
+    const base64Audio = Buffer.from(response.data).toString('base64');
+
+    res.json({
+      audio: `data:audio/mp3;base64,${base64Audio}`
+    });
+
+  } catch (error) {
+    console.error('TTS error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'TTS failed' });
+  }
+});
+
 app.listen(PORT, () => {                                    // Start
   console.log(`Server running on port ${PORT}`);
 });
-
