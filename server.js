@@ -4,6 +4,7 @@ const cors = require('cors');
 const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
 const ttsCache = new Map();                    // key → base64 mp3
+const SIGN_SECRET = process.env.SIGN_SECRET || '6202TERCESYM';
 
 const app = express();
 
@@ -50,13 +51,37 @@ function validateToken(token) {
   return true;
 }
 
-app.get('/health', (_, res) => res.send('ok'));      // Health check
+app.get('/health', (_, res) => res.send('ok'));      // Health 
+
+function verifySignedMac(mac, timestamp, signature) {
+  if (!mac || !timestamp || !signature) return false;
+
+                                    // timestamp должен быть свежим (±60 сек)
+  const now = Math.floor(Date.now() / 1000);
+  const ts = parseInt(timestamp, 10);
+  if (Math.abs(now - ts) > 60) return false;
+
+  const expected = crypto
+    .createHash('sha256')
+    .update(mac + timestamp + SIGN_SECRET)
+    .digest('hex');
+
+  // timing-safe compare
+  return crypto.timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(signature)
+  );
+}
 
 app.post('/checka', (req, res) => {                  // Получение токена
-  const { aaa } = req.body;
+  const { aaa, t, s } = req.body;
 
   if (!aaa || typeof aaa !== 'string') {
     return res.status(400).json({ error: 'Invalid request' });
+  }
+
+  if (!verifySignedMac(aaa, t, s)) {
+    return res.status(403).json({ error: 'Invalid signature' });
   }
 
   if (!allowedMacAddresses.includes(aaa)) {
